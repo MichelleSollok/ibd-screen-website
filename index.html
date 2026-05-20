@@ -5,23 +5,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
-    content="Design and evaluate multi-stage IBD screening pipelines. Compare costs, sensitivity, and PPV across different screening strategies.">
+    content="Design and evaluate multi-stage screening pipelines. Compare costs, sensitivity, and PPV across different screening strategies.">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="IBD Screen">
+  <meta property="og:title" content="ChronScreen">
   <meta property="og:description"
-    content="Design and evaluate multi-stage IBD screening pipelines. Compare costs, sensitivity, and PPV across different screening strategies.">
+    content="Design and evaluate multi-stage screening pipelines. Compare costs, sensitivity, and PPV across different screening strategies.">
   <meta property="og:image" content="https://ibdscreen.org/preview.png">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="IBD Screen">
+  <meta name="twitter:title" content="ChronScreen">
   <meta name="twitter:description"
-    content="Design and evaluate multi-stage IBD screening pipelines. Compare costs, sensitivity, and PPV across different screening strategies.">
+    content="Design and evaluate multi-stage screening pipelines. Compare costs, sensitivity, and PPV across different screening strategies.">
   <meta name="twitter:image" content="https://ibdscreen.org/preview.png">
 
-  <title>IBD Screen</title>
+  <title> ChronScreen</title>
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-7BF61S16ZC"></script>
@@ -1989,7 +1989,7 @@
 <body>
   <div class="app-container">
     <header>
-      <h1>IBD Screen <span style="color: #64748b;">– hierarchical IBD screening</span></h1>
+      <h1>ChronScreen <span style="color: #64748b;">– hierarchical screening</span></h1>
       <div class="header-controls">
         <a href="trial.html" class="header-dashboard-btn" style="background: linear-gradient(135deg, #0891b2, #3b82f6);"
           target="_blank">Trial Design</a>
@@ -2001,7 +2001,7 @@
           <input type="number" id="population" value="100000" min="1000" max="10000000" step="10000">
         </div>
         <div class="header-control">
-          <label>IBD Risk:</label>
+          <label>Risk:</label>
           <input type="number" id="prevalence" value="1.0" min="0.1" max="10" step="0.1">
           <span>%</span>
         </div>
@@ -2014,7 +2014,7 @@
 
     <!-- Left: Block Palette -->
     <aside class="block-palette">
-      <p class="palette-description">Build multi-stage IBD prediction pipelines by combining screening steps. Adjust AUC
+      <p class="palette-description">Build multi-stage prediction pipelines by combining screening steps. Adjust AUC
         and selection thresholds to model different strategies and compare costs vs. detection rates.</p>
       <div class="palette-section presets-section">
         <div class="palette-title">Presets</div>
@@ -2253,7 +2253,7 @@
 
   <script>
     // =========================
-    // Hierarchical IBD Screening (web)
+    // Hierarchical Screening (web)
     // Math matches final.ipynb: binormal model + top-q tail of the mixture at each layer
     // =========================
 
