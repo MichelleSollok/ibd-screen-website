@@ -2276,9 +2276,18 @@
         pipeline: presets.cost.pipeline
       },
       t1d: {
-        description: "test",
-        paletteBlocks: ['demographic', 'blood', 'genetic', 'omics', 'custom'],
-        pipeline: presets.nospared.pipeline
+        description: "Type 1 Diabetes stage 3",
+        paletteBlocks: ['autoantibody', 'blood', 'genetic', 'omics', 'custom'],
+        pipeline: [
+          {
+            "type": "custom",
+            "name": "Autoantibody Panel",
+            "auc": 0.98,
+            "cohortPct": 0.3,
+            "cost": 15,
+            "routinelyAvailable": false
+          }
+        ]
       }
     };
 

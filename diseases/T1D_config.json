@@ -1,0 +1,16 @@
+{
+    "name": "Type 1 Diabetes",
+    "population": 154462,
+    "prevalence": 0.088,
+    "correlations": {},
+    "pipeline": [
+        {
+            "type": "autoantibody",
+            "name": "Autoantibody Panel",
+            "auc": 0.98,
+            "cohortPct": 0.3,
+            "cost": 15,
+            "routinelyAvailable": false
+        }
+    ]
+}
