@@ -1997,6 +1997,15 @@
         <button class="header-share-btn" onclick="copyShareURL()" title="Copy shareable link">Share</button>
         <button class="header-share-btn" onclick="openConfigModal()" title="Import/Export config">Config</button>
         <div class="header-control">
+          <label>Disease Model:</label>
+          <select id="disease-select" onchange="if(this.value) window.location.href=this.value;">
+            <option value="">Select a Disease...</option>
+            <option value="diseases/crohn.html">Crohn's Disease</option>
+            <option value="diseases/ra.html">Rheumatoid Arthritis</option>
+            <option value="diseases/t1d.html">Type 1 Diabetes</option>
+          </select>
+        </div>
+        <div class="header-control">
           <label>Population:</label>
           <input type="number" id="population" value="100000" min="1000" max="10000000" step="10000">
         </div>
@@ -2013,9 +2022,11 @@
     </header>
 
     <!-- Left: Block Palette -->
-    <aside class="block-palette">
-      <p class="palette-description">Build multi-stage prediction pipelines by combining screening steps. Adjust AUC
-        and selection thresholds to model different strategies and compare costs vs. detection rates.</p>
+    <aside class="block-palette">Build multi-stage prediction pipelines for chronic ilnesses by combining screening
+      steps. Adjust AUC
+      and selection thresholds to model different strategies and compare costs vs. detection rates. Standard optimized
+      screening setups include: Rheumatoid Arthritis
+      Type 1 Diabetes and Crohns Disease></p>
       <div class="palette-section presets-section">
         <div class="palette-title">Disease-specific</div>
         <div class="preset-buttons">
@@ -3699,6 +3710,20 @@
       const json = document.getElementById('config-textarea').value;
       loadConfigJSON(json);
     }
+
+    // Load config from URL parameter if present
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const configUrl = urlParams.get('config');
+      if (configUrl) {
+        fetch(configUrl)
+          .then(response => response.json())
+          .then(data => {
+            loadConfigJSON(JSON.stringify(data));
+          })
+          .catch(error => console.error('Error loading config:', error));
+      }
+    });
   </script>
 
   <!-- Config Modal -->
