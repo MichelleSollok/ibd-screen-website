@@ -2001,8 +2001,8 @@
           <select id="disease-select" onchange="loadDisease(this.value)">
             <option value="">Select a Disease...</option>
             <option value="crohns">Crohn's Disease</option>
-            <option value="ra">Rheumatoid Arthritis</option>
-            <option value="t1d">Type 1 Diabetes</option>
+            <option value="cost">Cost-effective</option>
+            <option value="nospared">No cost spared</option>
           </select>
         </div>
         <div class="header-control">
@@ -2029,8 +2029,8 @@
         <div class="palette-title">Disease-specific</div>
         <div class="preset-buttons">
           <button class="preset-btn" data-preset="default">Crohn's</button>
-          <button class="preset-btn" data-preset="cost">Rheumatoid Arthritis</button>
-          <button class="preset-btn" data-preset="nospared">Type 1 Diabetes</button>
+          <button class="preset-btn" data-preset="cost">Cost-effective</button>
+          <button class="preset-btn" data-preset="nospared">No cost spared</button>
         </div>
       </div>
 
@@ -2259,27 +2259,45 @@
         correlations: {}
       }
     };
-
     const diseaseConfigs = {
-      crohns: {
-        description: "test",
-        paletteBlocks: ['family', 'genetic', 'fecal'],
+      cost: {
+        paletteBlocks: ['demographic', 'blood', 'genetic', 'omics', 'custom'],
+        pipeline: presets.cost.pipeline
+      },
+      nospared: {
+        paletteBlocks: ['demographic', 'blood', 'genetic', 'omics', 'custom'],
+        pipeline: presets.nospared.pipeline
+      }
+      // Crohn's disease will be handled via separate page
+    },
+      cost: {
+        paletteBlocks: ['demographic', 'blood', 'genetic', 'omics', 'custom'],
+        pipeline: presets.cost.pipeline
+      },
+      nospared: {
+        paletteBlocks: ['demographic', 'blood', 'genetic', 'omics', 'custom'],
+        pipeline: presets.nospared.pipeline
+      }
+    // Crohn's config will be loaded dynamically from external JSON file
+    },
+    description: "test",
+      paletteBlocks: ['family', 'genetic', 'fecal'],
         pipeline: [
           { type: 'family', name: 'Family history', auc: 0.70, cohortPct: 100, cost: 5, routinelyAvailable: true },
           { type: 'genetic', name: 'PRS', auc: 0.75, cohortPct: 30, cost: 50, routinelyAvailable: true },
           { type: 'fecal', name: 'Fcal', auc: 0.85, cohortPct: 15, cost: 25, routinelyAvailable: false }
         ]
       },
-      ra: {
-        description: "test",
+    ra: {
+      description: "test",
         paletteBlocks: ['demographic', 'blood', 'genetic', 'omics', 'custom'],
-        pipeline: presets.cost.pipeline
-      },
-      t1d: {
-        description: "test",
+          pipeline: presets.cost.pipeline
+    },
+    nospared: {
+      description: "test",
         paletteBlocks: ['demographic', 'blood', 'genetic', 'omics', 'custom'],
-        pipeline: presets.nospared.pipeline
-      }
+          pipeline: presets.nospared.pipeline
+    }
     };
 
     function renderPalette(allowedBlocks) {
@@ -2308,6 +2326,36 @@
 
     function loadDisease(diseaseId) {
       const descDiv = document.getElementById('disease-description');
+
+      if (!diseaseId || diseaseId === '') {
+        if (descDiv) descDiv.style.display = 'none';
+        const defaultBlocks = ['demographic', 'environment', 'genetic', 'blood', 'fecal', 'omics', 'imaging', 'custom'];
+        renderPalette(defaultBlocks);
+        loadPreset('default');
+        return;
+      }
+
+      // In your loadDisease() function, change the crohns case to:
+      if (diseaseId === 'crohns') {
+        window.location.href = 'crohn.html';
+        return;
+      }
+
+      const conf = diseaseConfigs[diseaseId];
+      if (conf) {
+        if (descDiv) {
+          descDiv.innerHTML = conf.description;
+          descDiv.style.display = 'block';
+        }
+        renderPalette(conf.paletteBlocks);
+        pipeline = conf.pipeline.map((block) => ({
+          ...block,
+          id: ++blockIdCounter
+        }));
+        correlations = {};
+        renderPipeline();
+        runSimulation();
+      }
 
       if (!diseaseId || diseaseId === '') {
         if (descDiv) descDiv.style.display = 'none';

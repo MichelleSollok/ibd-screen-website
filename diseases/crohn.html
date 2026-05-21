@@ -2,77 +2,185 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>IBD | ChronScreen</title>
-
-    <link rel="stylesheet" href="../css/styles.css" />
+    <meta charset="UTF-8">
+    <title>ChronScreen – Crohn's Disease</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 
 <body>
-
-    <nav>
-        <a href="../index.html">Home</a>
-        <a href="../index.html?config=diseases/crohn_config.json">
-            Launch Simulator
-        </a>
-    </nav>
-
-    <header class="disease-hero">
-        <h1>Inflammatory Bowel Disease</h1>
-
-        <p>
-            Preclinical screening and pathway optimisation
-            for Crohn’s disease and ulcerative colitis.
-        </p>
+    <!-- Header – same as index.html -->
+    <header class="app-header">
+        <h1>ChronScreen – Crohn's Disease</h1>
+        <div class="header-controls">
+            <label>Population:
+                <input type="number" id="population" value="100000" min="1000" max="10000000" step="10000">
+            </label>
+            <label>Risk:
+                <input type="number" id="prevalence" value="1.0" min="0.1" max="10" step="0.1">%
+            </label>
+            <label>Simulations:
+                <input type="number" id="num-sims" value="999" min="100" max="50000" step="100">
+            </label>
+        </div>
     </header>
 
-    <section>
-        <h2>Key Biomarkers</h2>
+    <!-- Disease description (filled by JS) -->
+    <div id="disease-description" style="margin:15px;padding:15px;background:#e2e8f0;border-radius:8px;
+              text-align:center;font-weight:500;font-size:0.9rem;color:#1e293b;
+              display:none;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+    </div>
 
-        <div class="card-grid">
+    <!-- Left palette -->
+    <aside class="block-palette">
+        <p class="palette-description">
+            Build multi‑stage prediction pipelines by combining screening steps.
+            Adjust AUC and selection thresholds to model different strategies and
+            compare costs vs. detection rates.
+        </p>
 
-            <div class="card">
-                <h3>Anti-αvβ6</h3>
-                <p>AUC: 0.91</p>
-            </div>
-
-            <div class="card">
-                <h3>Calprotectin</h3>
-                <p>AUC: 0.82</p>
-            </div>
-
-            <div class="card">
-                <h3>Polygenic Risk</h3>
-                <p>Risk enrichment</p>
-            </div>
-
+        <div class="palette-section presets-section">
+            <div class="palette-title">Disease‑specific</div>
+            <!-- No preset buttons needed – we are already on Crohn's page -->
         </div>
-    </section>
 
-    <section>
-        <h2>Example Pathway</h2>
-
-        <div class="pathway">
-            Population → PRS → Serology → Colonoscopy
+        <div class="palette-section blocks-section">
+            <div class="palette-title">Screening Blocks</div>
+            <p class="palette-instructions">Tap or drag blocks to add screening steps</p>
+            <div class="palette-blocks-grid" id="palette-blocks-grid"></div>
         </div>
-    </section>
 
-    <section>
-        <h2>Screening Challenges</h2>
+        <div class="palette-section correlations-section">
+            <div class="palette-title">Layer Correlations</div>
+            <p class="palette-instructions">Define correlations between screening layers (0‑1)</p>
+            <div class="correlation-matrix" id="correlation-matrix">
+                <div class="no-correlation-msg">Add 2+ layers to set correlations</div>
+            </div>
+        </div>
 
-        <ul>
-            <li>Low prevalence</li>
-            <li>Invasive gold-standard diagnosis</li>
-            <li>Long preclinical phase</li>
-        </ul>
-    </section>
+        <button class="correlations-toggle-btn" id="correlations-toggle">Screening layer correlations</button>
+        <button class="reset-btn" id="reset-btn">Reset Pipeline</button>
+    </aside>
 
-    <section class="cta">
-        <a class="button" href="../index.html?config=diseases/crohn_config.json">
-            Launch IBD Simulation
-        </a>
-    </section>
+    <!-- Main pipeline canvas -->
+    <main class="pipeline-canvas">
+        <div class="pipeline-container">
+            <div class="population-block">
+                <div class="population-block-title">General Population</div>
+                <div class="population-block-value" id="pop-display">100,000</div>
+                <div class="population-block-subtitle"><span id="cases-display">1,000</span> expected cases (1.0%)</div>
+            </div>
+            <div class="pipeline-connector"></div>
+            <div class="drop-zone" id="drop-zone">
+                <span>Drag screening blocks here to build pipeline</span>
+            </div>
+        </div>
+    </main>
 
+    <!-- Results panel (copy from index.html) -->
+    <aside class="results-panel">
+        <div class="results-section">
+            <div class="results-title">Result summary</div>
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-icon">🧮</div>
+                    <div class="result-label">Total cost</div>
+                    <div class="result-value" id="total-cost"></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-icon">📈</div>
+                    <div class="result-label">Final cases detected</div>
+                    <div class="result-value" id="final-cases"></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-icon">💰</div>
+                    <div class="result-label">Cost per case detected</div>
+                    <div class="result-value" id="cost-per-case"></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-icon">⚖️</div>
+                    <div class="result-label">Cost‑effectiveness (AUC needed)</div>
+                    <div class="result-value" id="single-auc"></div>
+                    <div class="result-subtext" id="single-feasibility"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pipeline-section">
+            <div class="pipeline-title">Pipeline details</div>
+            <div class="pipeline-info"><span id="cumulative-sens"></span> • <span id="cumulative-spec"></span> • <span
+                    id="cumulative-cost"></span></div>
+        </div>
+
+        <div class="single-test-section">
+            <div class="single-test-title">Single‑test comparison</div>
+            <div class="single-test-grid">
+                <div class="single-test-card">
+                    <div class="single-test-icon">🧪</div>
+                    <div class="single-test-label">AUC required</div>
+                    <div class="single-test-value" id="single-auc"></div>
+                </div>
+                <div class="single-test-card">
+                    <div class="single-test-icon">🔧</div>
+                    <div class="single-test-label">Feasibility</div>
+                    <div class="single-test-value" id="single-feasibility"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ==================== JavaScript ==================== -->
+    <!-- Paste the full <script> block that already exists in index.html.
+       The only thing to delete from that script is the code that:
+       * builds the disease dropdown (the `<select id="disease-select">` listener)
+       * calls `loadDisease()` on page load. -->
+    <!-- The rest of the script (block definitions, renderPalette, initDragDrop,
+       runSimulation, etc.) stays exactly as in index.html. -->
+    <script>
+        /* ---- BEGIN COPY FROM index.html ---- */
+
+        // All the variables, helper functions, blockTypes, presets, etc.
+        // (Copy the section that starts with `let pipeline = [...]` and ends with `init();`)
+
+        /* ---- END COPY ---- */
+
+        // Because this page is already Crohn's, we initialise with Crohn's config:
+        fetch('../diseases/crohn_config.json')
+            .then(r => r.json())
+            .then(conf => {
+                const descDiv = document.getElementById('disease-description');
+                if (descDiv) {
+                    descDiv.innerHTML = conf.description || 'Crohn\'s Disease';
+                    descDiv.style.display = 'block';
+                }
+                // Crohn's palette: family, genetic, fecal
+                renderPalette(['family', 'genetic', 'fecal']);
+                pipeline = conf.pipeline.map(b => ({ ...b, id: ++blockIdCounter }));
+                correlations = {};
+                renderPipeline();
+                runSimulation();
+            })
+            .catch(err => console.error('Failed to load Crohn config:', err));
+
+        // Initialise default UI (population, prevalence, etc.)
+        document.getElementById('population').addEventListener('input', runSimulation);
+        document.getElementById('prevalence').addEventListener('input', runSimulation);
+        document.getElementById('num-sims').addEventListener('input', runSimulation);
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            // Reset to Crohn defaults
+            fetch('../diseases/crohn_config.json')
+                .then(r => r.json())
+                .then(conf => {
+                    renderPalette(['family', 'genetic', 'fecal']);
+                    pipeline = conf.pipeline.map(b => ({ ...b, id: ++blockIdCounter }));
+                    correlations = {};
+                    renderPipeline();
+                    runSimulation();
+                });
+        });
+
+        // Initialise everything
+        init();
+    </script>
 </body>
 
 </html>
