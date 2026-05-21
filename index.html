@@ -2335,26 +2335,9 @@
         return;
       }
 
-      // Handle Crohn's disease by loading external config JSON
+      // In your loadDisease() function, change the crohns case to:
       if (diseaseId === 'crohns') {
-        fetch('diseases/crohn_config.json')
-          .then(response => response.json())
-          .then(conf => {
-            if (descDiv) {
-              descDiv.innerHTML = conf.description || 'test';
-              descDiv.style.display = 'block';
-            }
-            // Use same palette blocks as before (family, genetic, fecal)
-            renderPalette(['family', 'genetic', 'fecal']);
-            pipeline = conf.pipeline.map(block => ({
-              ...block,
-              id: ++blockIdCounter
-            }));
-            correlations = {};
-            renderPipeline();
-            runSimulation();
-          })
-          .catch(err => console.error('Failed to load Crohn config:', err));
+        window.location.href = 'crohn.html';
         return;
       }
 
