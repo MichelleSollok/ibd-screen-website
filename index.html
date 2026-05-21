@@ -2020,14 +2020,11 @@
         </div>
       </div>
     </header>
-    <div id="disease-description" style="padding: 15px; background: #e2e8f0; text-align: center; font-weight: bold; display: none; color: #1e293b;"></div>
 
     <!-- Left: Block Palette -->
-    <aside class="block-palette">Build multi-stage prediction pipelines for chronic ilnesses by combining screening
-      steps. Adjust AUC
-      and selection thresholds to model different strategies and compare costs vs. detection rates. Standard optimized
-      screening setups include: Rheumatoid Arthritis
-      Type 1 Diabetes and Crohns Disease></p>
+    <aside class="block-palette">
+      <p class="palette-description">Build multi-stage prediction pipelines by combining screening steps. Adjust AUC
+        and selection thresholds to model different strategies and compare costs vs. detection rates.</p>
       <div class="palette-section presets-section">
         <div class="palette-title">Disease-specific</div>
         <div class="preset-buttons">
@@ -2075,6 +2072,7 @@
 
     <!-- Center: Pipeline Canvas -->
     <main class="pipeline-canvas">
+      <div id="disease-description" style="margin-bottom: 20px; padding: 15px; background: #e2e8f0; border-radius: 8px; text-align: center; font-weight: 500; font-size: 0.9rem; color: #1e293b; display: none; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></div>
       <div class="pipeline-container">
         <div class="population-block">
           <div class="population-block-title">General Population</div>
@@ -2307,14 +2305,13 @@
     }
 
     function loadDisease(diseaseId) {
-      const descDiv = document.getElementById('disease-description');
       if (!diseaseId) {
-         if (descDiv) descDiv.style.display = 'none';
-         renderPalette(Object.keys(blockTypes));
-         loadPreset('default');
-         return;
+        diseaseId = 'crohns';
+        const selectElem = document.getElementById('disease-select');
+        if(selectElem) selectElem.value = 'crohns';
       }
       
+      const descDiv = document.getElementById('disease-description');
       const conf = diseaseConfigs[diseaseId];
       if (conf) {
         if (descDiv) {
