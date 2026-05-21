@@ -1998,11 +1998,11 @@
         <button class="header-share-btn" onclick="openConfigModal()" title="Import/Export config">Config</button>
         <div class="header-control">
           <label>Disease Model:</label>
-          <select id="disease-select" onchange="if(this.value) window.location.href=this.value;">
+          <select id="disease-select" onchange="loadDisease(this.value)">
             <option value="">Select a Disease...</option>
-            <option value="diseases/crohn.html">Crohn's Disease</option>
-            <option value="diseases/ra.html">Rheumatoid Arthritis</option>
-            <option value="diseases/t1d.html">Type 1 Diabetes</option>
+            <option value="crohns">Crohn's Disease</option>
+            <option value="ra">Rheumatoid Arthritis</option>
+            <option value="t1d">Type 1 Diabetes</option>
           </select>
         </div>
         <div class="header-control">
@@ -2020,6 +2020,7 @@
         </div>
       </div>
     </header>
+    <div id="disease-description" style="padding: 15px; background: #e2e8f0; text-align: center; font-weight: bold; display: none; color: #1e293b;"></div>
 
     <!-- Left: Block Palette -->
     <aside class="block-palette">Build multi-stage prediction pipelines for chronic ilnesses by combining screening
@@ -2040,78 +2041,8 @@
         <div class="palette-title">Screening Blocks</div>
         <p class="palette-instructions">Tap or drag blocks to add screening steps</p>
 
-        <div class="palette-blocks-grid">
-          <div class="palette-block block-demographic" draggable="true" data-type="demographic">
-            <div class="palette-block-icon">👥</div>
-            <div class="palette-block-name">Demographics</div>
-            <div class="palette-block-stats">
-              <span>AUC: 0.70</span>
-              <span>€2</span>
-            </div>
-          </div>
-
-          <div class="palette-block block-environment" draggable="true" data-type="environment">
-            <div class="palette-block-icon">🌍</div>
-            <div class="palette-block-name">Environment</div>
-            <div class="palette-block-stats">
-              <span>AUC: 0.75</span>
-              <span>€15</span>
-            </div>
-          </div>
-
-          <div class="palette-block block-genetic" draggable="true" data-type="genetic">
-            <div class="palette-block-icon">🧬</div>
-            <div class="palette-block-name">PRS</div>
-            <div class="palette-block-stats">
-              <span>AUC: 0.75</span>
-              <span>€50</span>
-            </div>
-          </div>
-
-          <div class="palette-block block-blood" draggable="true" data-type="blood">
-            <div class="palette-block-icon">🩸</div>
-            <div class="palette-block-name">Bloodwork</div>
-            <div class="palette-block-stats">
-              <span>AUC: 0.75</span>
-              <span>€20</span>
-            </div>
-          </div>
-
-          <div class="palette-block block-fecal" draggable="true" data-type="fecal">
-            <div class="palette-block-icon">💩</div>
-            <div class="palette-block-name">Fecal</div>
-            <div class="palette-block-stats">
-              <span>AUC: 0.85</span>
-              <span>€25</span>
-            </div>
-          </div>
-
-          <div class="palette-block block-omics" draggable="true" data-type="omics">
-            <div class="palette-block-icon">🧫</div>
-            <div class="palette-block-name">Omics</div>
-            <div class="palette-block-stats">
-              <span>AUC: 0.85</span>
-              <span>€100</span>
-            </div>
-          </div>
-
-          <div class="palette-block block-imaging" draggable="true" data-type="imaging">
-            <div class="palette-block-icon">📷</div>
-            <div class="palette-block-name">Imaging</div>
-            <div class="palette-block-stats">
-              <span>AUC: 0.80</span>
-              <span>€200</span>
-            </div>
-          </div>
-
-          <div class="palette-block block-custom" draggable="true" data-type="custom">
-            <div class="palette-block-icon">⚙️</div>
-            <div class="palette-block-name">Custom</div>
-            <div class="palette-block-stats">
-              <span>AUC: 0.75</span>
-              <span>€50</span>
-            </div>
-          </div>
+        <div class="palette-blocks-grid" id="palette-blocks-grid">
+          <!-- Dynamically populated by renderPalette() -->
         </div>
       </div>
 
@@ -2270,6 +2201,7 @@
 
     // Block definitions
     const blockTypes = {
+      family: { name: 'Family History', icon: '👨‍👩‍👧', className: 'block-demographic', defaultAuc: 0.70, defaultCohortPct: 100, defaultCost: 5 },
       genetic: { name: 'Polygenic Risk Score', icon: '🧬', className: 'block-genetic', defaultAuc: 0.75, defaultCohortPct: 10, defaultCost: 50 },
       demographic: { name: 'Demographics + History', icon: '👥', className: 'block-demographic', defaultAuc: 0.70, defaultCohortPct: 20, defaultCost: 2 },
       blood: { name: 'Bloodwork', icon: '🩸', className: 'block-blood', defaultAuc: 0.75, defaultCohortPct: 10, defaultCost: 20 },
@@ -2327,6 +2259,78 @@
         correlations: {}
       }
     };
+
+    const diseaseConfigs = {
+      crohns: {
+        description: "test",
+        paletteBlocks: ['family', 'genetic', 'fecal'],
+        pipeline: [
+          { type: 'family', name: 'Family history', auc: 0.70, cohortPct: 100, cost: 5, routinelyAvailable: true },
+          { type: 'genetic', name: 'PRS', auc: 0.75, cohortPct: 30, cost: 50, routinelyAvailable: true },
+          { type: 'fecal', name: 'Fcal', auc: 0.85, cohortPct: 15, cost: 25, routinelyAvailable: false }
+        ]
+      },
+      ra: {
+        description: "test",
+        paletteBlocks: ['demographic', 'blood', 'genetic', 'omics', 'custom'],
+        pipeline: presets.cost.pipeline
+      },
+      t1d: {
+        description: "test",
+        paletteBlocks: ['demographic', 'blood', 'genetic', 'omics', 'custom'],
+        pipeline: presets.nospared.pipeline
+      }
+    };
+
+    function renderPalette(allowedBlocks) {
+      const grid = document.getElementById('palette-blocks-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      allowedBlocks.forEach(type => {
+        const def = blockTypes[type];
+        if (!def) return;
+        const div = document.createElement('div');
+        div.className = `palette-block ${def.className}`;
+        div.draggable = true;
+        div.dataset.type = type;
+        div.innerHTML = `
+          <div class="palette-block-icon">${def.icon}</div>
+          <div class="palette-block-name">${def.name}</div>
+          <div class="palette-block-stats">
+            <span>AUC: ${def.defaultAuc.toFixed(2)}</span>
+            <span>€${def.defaultCost}</span>
+          </div>
+        `;
+        grid.appendChild(div);
+      });
+      initDragDrop();
+    }
+
+    function loadDisease(diseaseId) {
+      const descDiv = document.getElementById('disease-description');
+      if (!diseaseId) {
+         if (descDiv) descDiv.style.display = 'none';
+         renderPalette(Object.keys(blockTypes));
+         loadPreset('default');
+         return;
+      }
+      
+      const conf = diseaseConfigs[diseaseId];
+      if (conf) {
+        if (descDiv) {
+          descDiv.innerHTML = conf.description;
+          descDiv.style.display = 'block';
+        }
+        renderPalette(conf.paletteBlocks);
+        pipeline = conf.pipeline.map((block) => ({
+          ...block,
+          id: ++blockIdCounter
+        }));
+        correlations = {};
+        renderPipeline();
+        runSimulation();
+      }
+    }
 
     // =========================
     // Math helpers
@@ -3354,6 +3358,7 @@
       renderPipeline();
     }
 
+    let _dropZoneInitialized = false;
     function initDragDrop() {
       document.querySelectorAll('.palette-block').forEach(block => {
         // Click/tap to add (works on mobile/iOS)
@@ -3373,20 +3378,23 @@
         });
       });
 
-      const dropZone = document.getElementById('drop-zone');
-      if (!dropZone) return;
+      if (!_dropZoneInitialized) {
+        const dropZone = document.getElementById('drop-zone');
+        if (!dropZone) return;
 
-      dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.classList.add('drag-over');
-      });
-      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-      dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('drag-over');
-        if (!draggedType) return;
-        addBlockToPipeline(draggedType);
-      });
+        dropZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          dropZone.classList.add('drag-over');
+        });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+        dropZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropZone.classList.remove('drag-over');
+          if (!draggedType) return;
+          addBlockToPipeline(draggedType);
+        });
+        _dropZoneInitialized = true;
+      }
     }
 
     // =========================
@@ -3556,7 +3564,14 @@
       // Try to load state from URL first
       const loadedFromURL = decodeStateFromURL();
 
-      initDragDrop();
+      // Ensure a disease is loaded on init (or default if no dropdown value)
+      const selectElem = document.getElementById('disease-select');
+      if (selectElem) {
+        loadDisease(selectElem.value);
+      } else {
+        loadDisease('');
+      }
+
       initPresetButtons();
 
       document.getElementById('population')?.addEventListener('change', updateResults);
