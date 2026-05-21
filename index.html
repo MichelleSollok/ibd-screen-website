@@ -2072,7 +2072,9 @@
 
     <!-- Center: Pipeline Canvas -->
     <main class="pipeline-canvas">
-      <div id="disease-description" style="margin-bottom: 20px; padding: 15px; background: #e2e8f0; border-radius: 8px; text-align: center; font-weight: 500; font-size: 0.9rem; color: #1e293b; display: none; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></div>
+      <div id="disease-description"
+        style="margin-bottom: 20px; padding: 15px; background: #e2e8f0; border-radius: 8px; text-align: center; font-weight: 500; font-size: 0.9rem; color: #1e293b; display: none; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      </div>
       <div class="pipeline-container">
         <div class="population-block">
           <div class="population-block-title">General Population</div>
@@ -2305,13 +2307,20 @@
     }
 
     function loadDisease(diseaseId) {
-      if (!diseaseId) {
-        diseaseId = 'crohns';
-        const selectElem = document.getElementById('disease-select');
-        if(selectElem) selectElem.value = 'crohns';
-      }
-      
       const descDiv = document.getElementById('disease-description');
+
+      if (!diseaseId || diseaseId === '') {
+        if (descDiv) descDiv.style.display = 'none';
+
+        // Exclude 'family' from default palette if we want to match exactly, 
+        // but adding it doesn't hurt. We'll show the standard ones for the home page.
+        const defaultBlocks = ['demographic', 'environment', 'genetic', 'blood', 'fecal', 'omics', 'imaging', 'custom'];
+        renderPalette(defaultBlocks);
+
+        loadPreset('default');
+        return;
+      }
+
       const conf = diseaseConfigs[diseaseId];
       if (conf) {
         if (descDiv) {
