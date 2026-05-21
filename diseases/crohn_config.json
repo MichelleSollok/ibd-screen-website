@@ -4,10 +4,45 @@
   "prevalence": 1.0,
   "correlations": {},
   "pipeline": [
-    { "type": "genetic", "name": "Polygenic Risk Score", "auc": 0.75, "cohortPct": 58.72, "cost": 50, "routinelyAvailable": true },
-    { "type": "blood", "name": "Bloodwork", "auc": 0.72, "cohortPct": 58.87, "cost": 20, "routinelyAvailable": true },
-    { "type": "fecal", "name": "Fecal Calprotectin", "auc": 0.85, "cohortPct": 22.63, "cost": 25, "routinelyAvailable": false },
-    { "type": "omics", "name": "Omics Panel", "auc": 0.85, "cohortPct": 25.57, "cost": 100, "routinelyAvailable": false },
-    { "type": "imaging", "name": "Imaging Biomarkers", "auc": 0.90, "cohortPct": 73.79, "cost": 200, "routinelyAvailable": false }
+    {
+      "type": "genetic",
+      "name": "Polygenic Risk Score",
+      "auc": 0.75,
+      "cohortPct": 58.72,
+      "cost": 50,
+      "routinelyAvailable": true
+    },
+    {
+      "type": "blood",
+      "name": "Bloodwork",
+      "auc": 0.72,
+      "cohortPct": 58.87,
+      "cost": 20,
+      "routinelyAvailable": true
+    },
+    {
+      "type": "fecal",
+      "name": "Fecal Calprotectin",
+      "auc": 0.85,
+      "cohortPct": 22.63,
+      "cost": 25,
+      "routinelyAvailable": false
+    },
+    {
+      "type": "omics",
+      "name": "Omics Panel",
+      "auc": 0.85,
+      "cohortPct": 25.57,
+      "cost": 100,
+      "routinelyAvailable": false
+    },
+    {
+      "type": "imaging",
+      "name": "Imaging Biomarkers",
+      "auc": 0.90,
+      "cohortPct": 73.79,
+      "cost": 200,
+      "routinelyAvailable": false
+    }
   ]
 }
