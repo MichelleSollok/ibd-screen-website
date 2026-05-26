@@ -2202,6 +2202,7 @@
     // Block definitions
     const blockTypes = {
       family: { name: 'Family History', icon: '👨‍👩‍👧', className: 'block-demographic', defaultAuc: 0.70, defaultCohortPct: 100, defaultCost: 5 },
+      autoantibody: { name: 'Autoantibody Panel', icon: '🧪', className: 'block-autoantibody', defaultAuc: 0.98, defaultCohortPct: 0.3, defaultCost: 15 },
       genetic: { name: 'Polygenic Risk Score', icon: '🧬', className: 'block-genetic', defaultAuc: 0.75, defaultCohortPct: 10, defaultCost: 50 },
       demographic: { name: 'Demographics + History', icon: '👥', className: 'block-demographic', defaultAuc: 0.70, defaultCohortPct: 20, defaultCost: 2 },
       blood: { name: 'Bloodwork', icon: '🩸', className: 'block-blood', defaultAuc: 0.75, defaultCohortPct: 10, defaultCost: 20 },
@@ -2276,11 +2277,11 @@
         pipeline: presets.cost.pipeline
       },
       t1d: {
-        description: "Type 1 Diabetes stage 3",
+        description: "Type 1 Diabetes. Stage 1 diabetes is defined by the presence of two or more islet autoantibodies. This is tested by a single autoantibody panel that per definition have high AUC, sensitivity and specificity. The screening proposal is developed to predict progression to stage 3 diabetes (insulin dependence).",
         paletteBlocks: ['autoantibody', 'blood', 'genetic', 'omics', 'custom'],
         pipeline: [
           {
-            "type": "custom",
+            "type": "autoantibody",
             "name": "Autoantibody Panel",
             "auc": 0.98,
             "cohortPct": 0.3,
