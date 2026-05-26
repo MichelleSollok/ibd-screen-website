@@ -2256,35 +2256,37 @@
           { type: 'fecal', name: 'Fecal Calprotectin', auc: 0.85, cohortPct: 45, cost: 25, routinelyAvailable: false },
           { type: 'imaging', name: 'Imaging Biomarkers', auc: 0.92, cohortPct: 55, cost: 300, routinelyAvailable: false },
           { type: 'endoscopy', name: 'Endoscopy', auc: 0.98, cohortPct: 70, cost: 500, routinelyAvailable: false }
-      const diseaseConfigs = {
-          crohns: {
-            description: "Preclinical screening Crohn's disease. Affects ~ 0.3% of the population, with higher prevalence in First Degree Relatives (FDRs, ~ 1%). Adjust this in the Risk settings panel. Default numbers are based on published data.",
-            population: 100000,
-            prevalence: 1.0,
-            paletteBlocks: ['family', 'genetic', 'fecal'],
-            pipeline: [
-              { type: 'family', name: 'Family history', auc: 0.70, cohortPct: 100, cost: 5, routinelyAvailable: true },
-              { type: 'genetic', name: 'PRS', auc: 0.75, cohortPct: 30, cost: 50, routinelyAvailable: true },
-              { type: 'fecal', name: 'Fcal', auc: 0.85, cohortPct: 15, cost: 25, routinelyAvailable: false }
-            ]
-          },
-          ra: {
-            description: "test",
-            population: 100000,
-            prevalence: 0.5,
-            paletteBlocks: ['demographic', 'blood', 'genetic', 'omics', 'custom'],
-            pipeline: presets.cost.pipeline
-          },
-          t1d: {
-            description: "Type 1 Diabetes. Stage 1 diabetes is defined by the presence of two or more islet autoantibodies. This is tested by a single autoantibody panel that per definition have high AUC, sensitivity and specificity. The screening proposal is developed to predict progression to stage 3 diabetes (insulin dependence).",
-            population: 154462,
-            prevalence: 0.088,
-            paletteBlocks: ['autoantibody', 'blood', 'genetic', 'omics', 'custom'],
-            pipeline: [
-              { type: 'autoantibody', name: 'Autoantibody Panel', auc: 0.98, cohortPct: 0.3, cost: 15, routinelyAvailable: false }
-            ]
-          }
-        }; ailable": false
+        ],
+        correlations: {}
+      }
+    };
+
+    const diseaseConfigs = {
+      crohns: {
+        description: "Preclinical screening Crohn’s disease. Affects ~ 0.3% of the population, with higher prevalence in First Degree Relatives (FDRs, ~ 1%). Adjust this in the Risk settings panel. Default numbers are based on published data.",
+        paletteBlocks: ['family', 'genetic', 'fecal'],
+        pipeline: [
+          { type: 'family', name: 'Family history', auc: 0.70, cohortPct: 100, cost: 5, routinelyAvailable: true },
+          { type: 'genetic', name: 'PRS', auc: 0.75, cohortPct: 30, cost: 50, routinelyAvailable: true },
+          { type: 'fecal', name: 'Fcal', auc: 0.85, cohortPct: 15, cost: 25, routinelyAvailable: false }
+        ]
+      },
+      ra: {
+        description: "test",
+        paletteBlocks: ['demographic', 'blood', 'genetic', 'omics', 'custom'],
+        pipeline: presets.cost.pipeline
+      },
+      t1d: {
+        description: "Type 1 Diabetes. Stage 1 diabetes is defined by the presence of two or more islet autoantibodies. This is tested by a single autoantibody panel that per definition have high AUC, sensitivity and specificity. The screening proposal is developed to predict progression to stage 3 diabetes (insulin dependence).",
+        paletteBlocks: ['autoantibody', 'blood', 'genetic', 'omics', 'custom'],
+        pipeline: [
+          {
+            "type": "autoantibody",
+            "name": "Autoantibody Panel",
+            "auc": 0.98,
+            "cohortPct": 0.3,
+            "cost": 15,
+            "routinelyAvailable": false
           }
         ]
       }
@@ -2316,16 +2318,12 @@
 
     function loadDisease(diseaseId) {
       const descDiv = document.getElementById('disease-description');
-      const popInput = document.getElementById('population');
-      const prevInput = document.getElementById('prevalence');
 
       if (!diseaseId || diseaseId === '') {
         if (descDiv) descDiv.style.display = 'none';
 
-        // Reset population and prevalence to defaults
-        if (popInput) popInput.value = 100000;
-        if (prevInput) prevInput.value = 1.0;
-
+        // Exclude 'family' from default palette if we want to match exactly, 
+        // but adding it doesn't hurt. We'll show the standard ones for the home page.
         const defaultBlocks = ['demographic', 'environment', 'genetic', 'blood', 'fecal', 'omics', 'imaging', 'custom'];
         renderPalette(defaultBlocks);
 
@@ -2339,11 +2337,6 @@
           descDiv.innerHTML = conf.description;
           descDiv.style.display = 'block';
         }
-
-        // Apply disease-specific population and prevalence
-        if (conf.population && popInput) popInput.value = conf.population;
-        if (conf.prevalence != null && prevInput) prevInput.value = conf.prevalence;
-
         renderPalette(conf.paletteBlocks);
         pipeline = conf.pipeline.map((block) => ({
           ...block,
